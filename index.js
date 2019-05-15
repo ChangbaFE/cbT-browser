@@ -76,13 +76,13 @@
       const result = [];
 
       if (this.isArray(source)) {
-        source.forEach((item) => {
-          const tmp = this.trim(String(item));
+        for (let i = 0, len = source.length; i < len; i++) {
+          const tmp = this.trim(String(source[i]));
 
           if (tmp !== '') {
             result.push(this.encodeHTML(tmp));
           }
-        });
+        }
       }
 
       return result.join(sep);
