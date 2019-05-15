@@ -55,7 +55,7 @@
     },
 
     replaceUrlProtocol(source) {
-      return String(source).replace(/^https?:\/\/(.+?)$/i, '//$1');
+      return String(source).replace(/^https?:(\/\/.+?)$/i, document.location.protocol + '$1');
     },
 
     //转义UI UI变量使用在HTML页面标签onclick等事件函数参数中
