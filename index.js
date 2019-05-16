@@ -13,6 +13,8 @@
 
   'use strict';
 
+  const VERSION = '1.1.2';
+
   const TEMPLATE_OUT = '__templateOut__';
   const TEMPLATE_VAR_NAME = '__templateVarName__';
   const TEMPLATE_SUB = '__templateSub__';
@@ -140,7 +142,7 @@
   const core = {
 
     //标记当前版本
-    version: '1.1.1',
+    version: VERSION,
 
     //自定义分隔符，可以含有正则中的字符，可以是HTML注释开头 <! !>
     leftDelimiter: '<%',
