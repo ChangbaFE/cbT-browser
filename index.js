@@ -22,7 +22,7 @@
   const SUB_TEMPLATE = '__subTemplate__';
   const FOREACH_INDEX = 'Index';
 
-  //转义影响正则的字符
+  // 转义影响正则的字符
   const encodeReg = (source) => String(source).replace(/([.*+?^=!:${}()|[\]/\\])/g, '\\$1');
 
   // 辅助函数
@@ -60,7 +60,7 @@
       return String(source).replace(/^https?:(\/\/.+?)$/i, document.location.protocol + '$1');
     },
 
-    //转义UI UI变量使用在HTML页面标签onclick等事件函数参数中
+    // 转义UI UI变量使用在HTML页面标签onclick等事件函数参数中
     encodeEventHTML(source) {
       return String(source)
         .replace(/&/g, '&amp;')
@@ -90,7 +90,7 @@
       return result.join(sep);
     },
 
-    //判断是否是 Object 类型
+    // 判断是否是 Object 类型
     isObject(source) {
       return typeof source === 'function' || !!(source && typeof source === 'object');
     },
@@ -141,14 +141,14 @@
 
   const core = {
 
-    //标记当前版本
+    // 标记当前版本
     version: VERSION,
 
-    //自定义分隔符，可以含有正则中的字符，可以是HTML注释开头 <! !>
+    // 自定义分隔符，可以含有正则中的字符，可以是HTML注释开头 <! !>
     leftDelimiter: '<%',
     rightDelimiter: '%>',
 
-    //自定义默认是否转义，默认为自动转义
+    // 自定义默认是否转义，默认为自动转义
     escape: true,
 
     cache: {},
@@ -186,7 +186,7 @@
       return this.compile(str)(data, subtemplate);
     },
 
-    //将字符串拼接生成函数，即编译过程(compile)
+    // 将字符串拼接生成函数，即编译过程(compile)
     _compile(str) {
       return this._buildTemplateFunction(this._parse(str));
     },
@@ -226,7 +226,7 @@
       };
     },
 
-    //解析模板字符串
+    // 解析模板字符串
     _parse(str) {
 
       //取得分隔符
