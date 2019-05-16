@@ -195,19 +195,21 @@
 
     _buildTemplateFunction(str) {
       let funcBody = `
-        var ${TEMPLATE_OUT} = '';
         if (${SUB_TEMPLATE}) {
           ${TEMPLATE_OBJECT} = { value: ${TEMPLATE_OBJECT} };
         }
-        var ${TEMPLATE_VAR_NAME} = '';
-        if (typeof ${TEMPLATE_OBJECT} === 'function' || !!(${TEMPLATE_OBJECT} && typeof ${TEMPLATE_OBJECT} === 'object')) {
+        if (${TEMPLATE_HELPER}.isObject(${TEMPLATE_OBJECT})) {
+          var ${TEMPLATE_VAR_NAME} = '';
           for (var ${TEMPLATE_NAME} in ${TEMPLATE_OBJECT}) {
             ${TEMPLATE_VAR_NAME} += 'var ' + ${TEMPLATE_NAME} + ' = ${TEMPLATE_OBJECT}["' + ${TEMPLATE_NAME} + '"];';
           }
+          if (${TEMPLATE_VAR_NAME} !== '') {
+            eval(${TEMPLATE_VAR_NAME});
+          }
+          ${TEMPLATE_VAR_NAME} = null;
         }
-        eval(${TEMPLATE_VAR_NAME});
-        ${TEMPLATE_VAR_NAME} = null;
         var cbTemplate = ${TEMPLATE_HELPER};
+        var ${TEMPLATE_OUT} = '';
         var ${TEMPLATE_SUB} = {};
         ${TEMPLATE_OUT} += '${str}';
         return ${TEMPLATE_OUT};
