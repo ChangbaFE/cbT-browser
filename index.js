@@ -13,7 +13,7 @@
 
   'use strict';
 
-  const VERSION = '1.1.2';
+  const VERSION = '1.1.3';
 
   const TEMPLATE_OUT = '__templateOut__';
   const TEMPLATE_VAR_NAME = '__templateVarName__';
