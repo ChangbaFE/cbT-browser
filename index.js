@@ -151,44 +151,41 @@
 
     cache: {},
 
-    // 模板函数
-    template(str, data, subtemplate) {
-      let func;
-
+    // 编译模板
+    compile(str) {
       // 检查是否有该id的元素存在，如果有元素则获取元素的innerHTML/value，否则认为字符串为模板
       const element = document.getElementById(str);
 
       if (element) {
         //取到对应id的dom，缓存其编译后的HTML模板函数
         if (this.cache[str]) {
-          func = this.cache[str];
+          return this.cache[str];
         }
         else {
           //textarea或input则取value，其它情况取innerHTML
           const html = /^(textarea|input)$/i.test(element.nodeName) ? element.value : element.innerHTML;
 
-          func = this._compile(html);
+          return this._compile(html);
         }
       }
       else {
         //是模板字符串，则生成一个函数
         //如果直接传入字符串作为模板，则可能变化过多，因此不考虑缓存
-        func = this._compile(str);
+        return this._compile(str);
       }
-
-      return func(data, subtemplate);
     },
 
-    getCompiledString(str) {
-      return this._analysisStr(str);
+    // 渲染模板函数
+    render(str, data, subtemplate) {
+      return this.compile(str)(data, subtemplate);
     },
 
     //将字符串拼接生成函数，即编译过程(compile)
     _compile(str) {
-      return this._compileFromString(this._analysisStr(str));
+      return this._buildTemplateFunction(this._parse(str));
     },
 
-    _compileFromString(str) {
+    _buildTemplateFunction(str) {
       let funcBody = `
         var ${TEMPLATE_OUT} = '';
         ((${TEMPLATE_OBJECT}, ${SUB_TEMPLATE}) => {
@@ -224,7 +221,7 @@
     },
 
     //解析模板字符串
-    _analysisStr(str) {
+    _parse(str) {
 
       //取得分隔符
       const _left_ = this.leftDelimiter;
