@@ -19,6 +19,8 @@
   const TEMPLATE_VAR_NAME = '__templateVarName__';
   const TEMPLATE_SUB = '__templateSub__';
   const TEMPLATE_OBJECT = '__templateObject__';
+  const TEMPLATE_NAME = '__templateName__';
+  const TEMPLATE_HELPER = '__templateHelper__';
   const SUB_TEMPLATE = '__subTemplate__';
   const FOREACH_INDEX = 'Index';
 
@@ -45,7 +47,7 @@
       }
     },
 
-    //HTML转义
+    // HTML转义
     encodeHTML(source) {
       return String(source)
         .replace(/&/g, '&amp;')
@@ -194,23 +196,20 @@
     _buildTemplateFunction(str) {
       let funcBody = `
         var ${TEMPLATE_OUT} = '';
-        ((${TEMPLATE_OBJECT}, ${SUB_TEMPLATE}) => {
-          if (${SUB_TEMPLATE}) {
-            ${TEMPLATE_OBJECT} = { value: ${TEMPLATE_OBJECT} };
+        if (${SUB_TEMPLATE}) {
+          ${TEMPLATE_OBJECT} = { value: ${TEMPLATE_OBJECT} };
+        }
+        var ${TEMPLATE_VAR_NAME} = '';
+        if (typeof ${TEMPLATE_OBJECT} === 'function' || !!(${TEMPLATE_OBJECT} && typeof ${TEMPLATE_OBJECT} === 'object')) {
+          for (var ${TEMPLATE_NAME} in ${TEMPLATE_OBJECT}) {
+            ${TEMPLATE_VAR_NAME} += 'var ' + ${TEMPLATE_NAME} + ' = ${TEMPLATE_OBJECT}["' + ${TEMPLATE_NAME} + '"];';
           }
-          var ${TEMPLATE_VAR_NAME} = '';
-          if (typeof ${TEMPLATE_OBJECT} === 'function' || !!(${TEMPLATE_OBJECT} && typeof ${TEMPLATE_OBJECT} === 'object')) {
-            for (var name in ${TEMPLATE_OBJECT}) {
-              ${TEMPLATE_VAR_NAME} += 'var ' + name + ' = ${TEMPLATE_OBJECT}["' + name + '"];';
-            }
-          }
-          eval(${TEMPLATE_VAR_NAME});
-          ${TEMPLATE_VAR_NAME} = null;
-          const cbTemplate = this;
-          var ${TEMPLATE_SUB} = {};
-          ${TEMPLATE_OUT} += '${str}';
-        })(${TEMPLATE_OBJECT}, ${SUB_TEMPLATE});
-
+        }
+        eval(${TEMPLATE_VAR_NAME});
+        ${TEMPLATE_VAR_NAME} = null;
+        var cbTemplate = ${TEMPLATE_HELPER};
+        var ${TEMPLATE_SUB} = {};
+        ${TEMPLATE_OUT} += '${str}';
         return ${TEMPLATE_OUT};
       `;
 
@@ -219,11 +218,9 @@
       // 删除无效指令
       funcBody = funcBody.replace(new RegExp(`${TEMPLATE_OUT}\\s*\\+=\\s*'';`, 'g'), '');
 
-      const func = new Function(TEMPLATE_OBJECT, SUB_TEMPLATE, funcBody);
+      const func = new Function(TEMPLATE_HELPER, TEMPLATE_OBJECT, SUB_TEMPLATE, funcBody);
 
-      return (templateObject, subTemplate) => {
-        return func.call(helpers, templateObject, subTemplate);
-      };
+      return (templateObject, subTemplate) => func(helpers, templateObject, subTemplate);
     },
 
     // 解析模板字符串
