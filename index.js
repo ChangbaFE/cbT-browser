@@ -92,7 +92,7 @@
 
     //判断是否是 Object 类型
     isObject(source) {
-      return 'function' === typeof source || !!(source && 'object' === typeof source);
+      return typeof source === 'function' || !!(source && typeof source === 'object');
     },
 
     // 判断是否是 Array 类型
@@ -167,12 +167,16 @@
           //textarea或input则取value，其它情况取innerHTML
           const html = /^(textarea|input)$/i.test(element.nodeName) ? element.value : element.innerHTML;
 
-          return this._compile(html);
+          const func = this._compile(html);
+
+          this.cache[str] = func;
+
+          return func;
         }
       }
       else {
-        //是模板字符串，则生成一个函数
-        //如果直接传入字符串作为模板，则可能变化过多，因此不考虑缓存
+        // 是模板字符串，则生成一个函数
+        // 如果直接传入字符串作为模板，则可能变化过多，因此不考虑缓存
         return this._compile(str);
       }
     },
