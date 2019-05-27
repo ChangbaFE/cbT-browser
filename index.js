@@ -27,6 +27,15 @@
   // 转义影响正则的字符
   const encodeReg = (source) => String(source).replace(/([.*+?^=!:${}()|[\]/\\])/g, '\\$1');
 
+  // 判断是不是 DOM 元素
+  const isElement = (o) => (
+    typeof HTMLElement === "object" ? o instanceof HTMLElement : //DOM2
+      o && typeof o === "object" && o !== null && o.nodeType === 1 && typeof o.nodeName === "string"
+  );
+
+  // textarea 或 input 则取 value，其它情况取 innerHTML
+  const getContent = (element) => /^(textarea|input)$/i.test(element.nodeName) ? element.value : element.innerHTML;
+
   // 辅助函数
   const helpers = {
     // run wrapper
@@ -157,29 +166,30 @@
 
     // 编译模板
     compile(str) {
-      // 检查是否有该id的元素存在，如果有元素则获取元素的innerHTML/value，否则认为字符串为模板
-      const element = document.getElementById(str);
-
-      if (element) {
-        //取到对应id的dom，缓存其编译后的HTML模板函数
-        if (this.cache[str]) {
-          return this.cache[str];
-        }
-        else {
-          //textarea或input则取value，其它情况取innerHTML
-          const html = /^(textarea|input)$/i.test(element.nodeName) ? element.value : element.innerHTML;
-
-          const func = this._compile(html);
-
-          this.cache[str] = func;
-
-          return func;
-        }
+      // 检查 str 参数是否是 DOM 元素，如果是则获取元素的 innerHTML/value，否则认为字符串为模板
+      if (isElement(str)) {
+        // str 是 DOM 元素实例
+        return this._compile(getContent(str));
       }
       else {
-        // 是模板字符串，则生成一个函数
-        // 如果直接传入字符串作为模板，则可能变化过多，因此不考虑缓存
-        return this._compile(str);
+        const element = document.getElementById(str);
+
+        if (element) {
+          // 取到对应 id 的 dom，缓存其编译后的 HTML 模板函数
+          if (this.cache[str]) {
+            return this.cache[str];
+          }
+          else {
+            this.cache[str] = this._compile(getContent(element));
+
+            return this.cache[str];
+          }
+        }
+        else {
+          // 是模板字符串，则生成一个函数
+          // 如果直接传入字符串作为模板，则可能变化过多，因此不考虑缓存
+          return this._compile(str);
+        }
       }
     },
 
