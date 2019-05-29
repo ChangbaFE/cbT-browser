@@ -1,6 +1,6 @@
 {
   "name": "cb-template-browser",
-  "version": "1.1.7",
+  "version": "1.1.8",
   "description": "浏览器端唱吧模板引擎",
   "main": "index.js",
   "scripts": {
